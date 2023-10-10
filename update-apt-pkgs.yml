@@ -1,7 +1,9 @@
 ---
-- name: Update and upgrade apt packages
-  hosts: 10.0.9.8
-  port: 1022
+- name: Deploy Web App
+  hosts: web_servers
+  gather_facts: true
+  become: true
+
   tasks:
     - name: update apt packages
       apt:

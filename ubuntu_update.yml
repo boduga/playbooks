@@ -1,0 +1,41 @@
+---
+- name: Update and Configure Server
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update package list and upgrade all packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Change SSH port to 1022
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port\s'
+        line: 'Port 1022'
+      notify:
+        - restart ssh
+
+    - name: Install xcp-ng guest utilities
+      apt:
+        name: xe-guest-utilities
+        state: present
+
+    - name: Clean up unused packages
+      apt:
+        autoremove: yes
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted
+
+- name: Inform User
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Display message to inform the user
+      debug:
+        msg: "Please log out and log back in using port 1022."
